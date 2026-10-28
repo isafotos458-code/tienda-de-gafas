@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tienda de Gafas — Catálogo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+
+<!-- LIBRERÍAS DE DETECCIÓN FACIAL PARA EL PROBADOR VIRTUAL -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/face-landmarks-detection"></script>
+</head>
+<body>
+
+<!-- BARRA SUPERIOR DE CONTACTO -->
+<div class="top-bar">
+  <div class="top-bar-inner">
+    <div class="top-bar-left">
+      <a href="https://wa.me/5491169681500?text=Hola,%20quiero%20consultar%20por%20un%20producto" target="_blank" rel="noopener" class="top-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+        </svg>
+        <span>11 6968 1500</span>
+      </a>
+    </div>
+    <div class="top-bar-right">
+      <a href="https://instagram.com/tiendadegafas.optica" target="_blank" rel="noopener" class="top-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+        </svg>
+        <span>tiendadegafas.optica</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-left-group">
+      <button class="menu-toggle" onclick="openMenu()" aria-label="Abrir menú">☰</button>
+
+      <button class="search-toggle" onclick="openSearch()" aria-label="Buscar productos">
+        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </button>
+
+      <button class="wishlist-header-btn" onclick="openWishlist()" aria-label="Ver favoritos">
+        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+        </svg>
+        <span id="wishlist-badge" class="wishlist-badge">0</span>
+      </button>
+
+      <button class="cart-icon-btn" onclick="openCart()" aria-label="Ver carrito">
+        <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+        <span id="cart-badge" class="cart-badge">0</span>
+      </button>
+    </div>
+
+    <a href="index.html" class="logo">
+      <svg class="logo-glasses" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 12h3l2 3h10l2-3h3"></path>
+        <circle cx="6.5" cy="12" r="4.5"></circle>
+        <circle cx="17.5" cy="12" r="4.5"></circle>
+      </svg>
+      Tienda de Gafas
+    </a>
+
+    <div class="header-right-group">
+      <button class="login-header-btn" id="login-header-btn" onclick="handleUserBtnClick()" aria-label="Ingresar">
+        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        <span class="login-btn-text" id="login-btn-text">INGRESAR</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<section class="hero-banner">
+  <img src="images/banner-local.jpeg" alt="Local Tienda de Gafas" class="banner-img">
+</section>
+
+<main class="catalog" id="catalog"></main>
+
+<!-- ============ MODAL DE PROBADOR VIRTUAL ============ -->
+<div id="tryon-modal" class="tryon-modal">
+  <div class="tryon-modal-content">
+    <div class="tryon-header-row">
+      <div>
+        <h2 id="tryon-title">Probador Virtual 👓</h2>
+        <p id="tryon-subtitle" class="tryon-subtitle">Mirá a la cámara para probarte el modelo</p>
+      </div>
+      <button class="close-btn" onclick="closeTryOnModal()" aria-label="Cerrar">✕ Cerrar</button>
+    </div>
+
+    <div class="tryon-camera-container">
+      <video id="tryon-video" playsinline id="video" autoplay></video>
+      <canvas id="tryon-canvas"></canvas>
+      <div id="tryon-loading" class="tryon-loading">Iniciando cámara y reconocedor facial...</div>
+    </div>
+
+    <div class="tryon-footer">
+      <span id="tryon-product-price" class="tryon-price">$0</span>
+      <button id="tryon-add-btn" class="checkout-btn" style="padding: 10px 24px;">Agregar al Carrito</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL DE INGRESO / REGISTRO ============ -->
+<div id="login-modal" class="login-modal">
+  <div class="login-modal-content">
+    <div class="login-header-row">
+      <h2 id="login-modal-title">INGRESA</h2>
+      <button class="close-btn" onclick="closeLoginModal()" aria-label="Cerrar">✕ Cerrar</button>
+    </div>
+
+    <div class="login-body" id="login-form-view">
+      <p class="login-subtitle">Con tu cuenta de Google</p>
+      <button class="google-login-btn" onclick="loginWithGoogle()">
+        <svg width="18" height="18" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.62z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+        </svg>
+        Iniciar sesión con Google
+      </button>
+
+      <p class="login-subtitle margin-top-20">Con tu e-mail</p>
+      <form onsubmit="handleEmailLogin(event)">
+        <div class="input-group">
+          <input type="email" id="login-email" required placeholder="E-mail">
+        </div>
+        <div class="input-group password-group">
+          <input type="password" id="login-password" required placeholder="Contraseña">
+          <button type="button" class="toggle-password" onclick="togglePasswordVisibility()">👁</button>
+        </div>
+
+        <div class="login-action-row">
+          <button type="submit" class="submit-login-btn">Ingresar</button>
+          <a href="#" class="forgot-link" onclick="event.preventDefault(); alert('Te enviaremos un correo para restablecer tu contraseña.');">Olvidé mi contraseña</a>
+        </div>
+      </form>
+
+      <div class="create-account-section">
+        <p>¿No tienes cuenta?</p>
+        <button class="create-account-btn" onclick="switchToRegister()">Crear Nueva Cuenta</button>
+      </div>
+    </div>
+
+    <div class="login-body" id="register-form-view" style="display: none;">
+      <form onsubmit="handleEmailRegister(event)">
+        <div class="input-group">
+          <input type="text" id="reg-name" required placeholder="Nombre y Apellido">
+        </div>
+        <div class="input-group">
+          <input type="email" id="reg-email" required placeholder="E-mail">
+        </div>
+        <div class="input-group password-group">
+          <input type="password" id="reg-password" required placeholder="Contraseña">
+        </div>
+
+        <div class="login-action-row" style="margin-top: 20px;">
+          <button type="submit" class="submit-login-btn" style="background: #1C2B33;">Registrarse</button>
+          <a href="#" class="forgot-link" onclick="event.preventDefault(); switchToLogin();">Ya tengo cuenta</a>
+        </div>
+      </form>
+    </div>
+
+    <div class="login-body" id="user-logged-view" style="display: none; text-align: center; padding: 10px 0;">
+      <p id="logged-user-email" style="font-weight: 600; font-size: 1.05rem; margin-bottom: 20px; color: var(--ink);"></p>
+      <p style="font-size: 0.9rem; color: var(--ink-soft); margin-bottom: 25px;">Tus favoritos y carrito están sincronizados en esta cuenta.</p>
+      <button onclick="logoutUser()" style="background: #D9534F; color: white; border: none; padding: 10px 24px; border-radius: 6px; font-weight: 600; cursor: pointer; width: 100%;">Cerrar Sesión</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL DE BÚSQUEDA ============ -->
+<div id="search-modal" class="search-modal">
+  <div class="search-modal-content">
+    <div class="search-header-row">
+      <h2>Buscar productos</h2>
+      <button class="close-btn" onclick="closeSearch()" aria-label="Cerrar">✕</button>
+    </div>
+    <input type="text" id="search-input" placeholder="¿Qué estás buscando? (ej. recetado, sol...)" oninput="handleSearch(this.value)">
+  </div>
+</div>
+
+<!-- ============ MENÚ LATERAL IZQUIERDO ============ -->
+<div id="menu-overlay" class="menu-overlay" onclick="closeMenu()"></div>
+<aside id="menu-drawer" class="menu-drawer">
+  <div class="menu-header">
+    <h2>Menú</h2>
+    <button class="close-btn" onclick="closeMenu()" aria-label="Cerrar">✕</button>
+  </div>
+  <nav class="menu-nav">
+    <ul>
+      <li><a href="#" onclick="filtrarCategoria('Todos'); closeMenu();">🏠 Inicio</a></li>
+      <li><a href="#" onclick="filtrarCategoria('Recetados'); closeMenu();">Recetados</a></li>
+      <li><a href="#" onclick="filtrarCategoria('Lentes de Sol'); closeMenu();">Lentes de Sol</a></li>
+      <li><a href="#" onclick="filtrarCategoria('Mujer'); closeMenu();">Mujer</a></li>
+      <li><a href="#" onclick="filtrarCategoria('Hombre'); closeMenu();">Hombre</a></li>
+      <li><a href="#" onclick="filtrarCategoria('Unisex'); closeMenu();">Unisex</a></li>
+      <li><a href="#" onclick="filtrarCategoria('Infantil'); closeMenu();">Infantil</a></li>
+      <li><a href="#" onclick="filtrarCategoria('Accesorios'); closeMenu();">Accesorios</a></li>
+      
+      <li class="has-submenu">
+        <details>
+          <summary>Marca ▾</summary>
+          <ul class="submenu">
+            <li><a href="#" onclick="filtrarCategoria('Marca 1'); closeMenu();">Marca 1</a></li>
+            <li><a href="#" onclick="filtrarCategoria('Marca 2'); closeMenu();">Marca 2</a></li>
+          </ul>
+        </details>
+      </li>
+
+      <li class="has-submenu">
+        <details>
+          <summary>Lentes de contacto ▾</summary>
+          <ul class="submenu">
+            <li><a href="#" onclick="filtrarCategoria('Lentes de contacto'); closeMenu();">Lentes de contacto</a></li>
+            <li><a href="#" onclick="filtrarCategoria('Liquido para Lentes de contacto'); closeMenu();">Líquido para Lentes de contacto</a></li>
+          </ul>
+        </details>
+      </li>
+    </ul>
+  </nav>
+</aside>
+
+<!-- ============ CARRITO LATERAL ============ -->
+<div id="cart-overlay" class="cart-overlay" onclick="closeCart()"></div>
+<aside id="cart-drawer" class="cart-drawer">
+  <div class="cart-header">
+    <h2>Tu carrito</h2>
+    <button class="close-btn" onclick="closeCart()" aria-label="Cerrar">✕</button>
+  </div>
+  <div id="cart-items" class="cart-items"></div>
+  <div class="cart-footer">
+    <div class="cart-total-row">
+      <span>Total</span>
+      <span id="cart-total">$0</span>
+    </div>
+    <a href="checkout.html" class="checkout-btn">Ir a pagar</a>
+  </div>
+</aside>
+
+<!-- ============ FAVORITOS LATERAL (DRAWER) ============ -->
+<div id="wishlist-overlay" class="cart-overlay" onclick="closeWishlist()"></div>
+<aside id="wishlist-drawer" class="cart-drawer">
+  <div class="cart-header">
+    <h2>Tus Favoritos ❤️</h2>
+    <button class="close-btn" onclick="closeWishlist()" aria-label="Cerrar">✕</button>
+  </div>
+  <div id="wishlist-items" class="cart-items"></div>
+</aside>
+
+<footer class="site-footer">
+  <p>Tienda de Gafas · Proyecto escolar</p>
+</footer>
+
+<script src="js/products.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/catalog.js"></script>
+<script src="js/tryon.js"></script>
+
+<script>
+  function openMenu() {
+    document.getElementById('menu-drawer').classList.add('open');
+    document.getElementById('menu-overlay').classList.add('open');
+  }
+
+  function closeMenu() {
+    document.getElementById('menu-drawer').classList.remove('open');
+    document.getElementById('menu-overlay').classList.remove('open');
+  }
+
+  function openSearch() {
+    document.getElementById('search-modal').classList.add('open');
+    document.getElementById('search-input').focus();
+  }
+
+  function closeSearch() {
+    document.getElementById('search-modal').classList.remove('open');
+  }
+
+  // --- LÓGICA DE USUARIO Y SESIÓN ---
+  document.addEventListener("DOMContentLoaded", () => {
+    checkUserSession();
+    if (typeof renderCatalog === 'function') renderCatalog();
+  });
+
+  function checkUserSession() {
+    const user = JSON.parse(localStorage.getItem("optica_logged_user"));
+    const btnText = document.getElementById("login-btn-text");
+    if (user) {
+      btnText.textContent = user.name || user.email.split('@')[0];
+    } else {
+      btnText.textContent = "INGRESAR";
+    }
+  }
+
+  function handleUserBtnClick() {
+    const user = JSON.parse(localStorage.getItem("optica_logged_user"));
+    const modal = document.getElementById("login-modal");
+    const loginView = document.getElementById("login-form-view");
+    const registerView = document.getElementById("register-form-view");
+    const loggedView = document.getElementById("user-logged-view");
+    const title = document.getElementById("login-modal-title");
+
+    if (user) {
+      title.textContent = "MI CUENTA";
+      loginView.style.display = "none";
+      registerView.style.display = "none";
+      loggedView.style.display = "block";
+      document.getElementById("logged-user-email").textContent = `Sesión iniciada como: ${user.email}`;
+    } else {
+      switchToLogin();
+    }
+    modal.classList.add("open");
+  }
+
+  function switchToLogin() {
+    document.getElementById("login-modal-title").textContent = "INGRESA";
+    document.getElementById("login-form-view").style.display = "block";
+    document.getElementById("register-form-view").style.display = "none";
+    document.getElementById("user-logged-view").style.display = "none";
+  }
+
+  function switchToRegister() {
+    document.getElementById("login-modal-title").textContent = "CREAR CUENTA";
+    document.getElementById("login-form-view").style.display = "none";
+    document.getElementById("register-form-view").style.display = "block";
+    document.getElementById("user-logged-view").style.display = "none";
+  }
+
+  function closeLoginModal() {
+    document.getElementById("login-modal").classList.remove("open");
+  }
+
+  function loginWithGoogle() {
+    const emailGoogle = prompt("Ingresá tu correo de Google para iniciar sesión:", "isafotos458@gmail.com");
+    if (emailGoogle) {
+      const googleUser = { email: emailGoogle, name: emailGoogle.split('@')[0] };
+      localStorage.setItem("optica_logged_user", JSON.stringify(googleUser));
+      checkUserSession();
+      closeLoginModal();
+      alert("¡Sesión iniciada con Google exitosamente!");
+    }
+  }
+
+  function handleEmailLogin(event) {
+    event.preventDefault();
+    const email = document.getElementById("login-email").value;
+    const user = { email: email, name: email.split('@')[0] };
+    localStorage.setItem("optica_logged_user", JSON.stringify(user));
+    checkUserSession();
+    closeLoginModal();
+    alert("¡Sesión iniciada correctamente!");
+  }
+
+  function handleEmailRegister(event) {
+    event.preventDefault();
+    const name = document.getElementById("reg-name").value;
+    const email = document.getElementById("reg-email").value;
+    const user = { email: email, name: name };
+    localStorage.setItem("optica_logged_user", JSON.stringify(user));
+    checkUserSession();
+    closeLoginModal();
+    alert("¡Cuenta creada e iniciada con éxito!");
+  }
+
+  function logoutUser() {
+    localStorage.removeItem("optica_logged_user");
+    checkUserSession();
+    closeLoginModal();
+    alert("Sesión cerrada correctamente.");
+  }
+
+  function togglePasswordVisibility() {
+    const input = document.getElementById('login-password');
+    input.type = input.type === 'password' ? 'text' : 'password';
+  }
+
+  function handleSearch(query) {
+    const term = query.toLowerCase().trim();
+    if (term === '') {
+      renderCatalog();
+      return;
+    }
+    const filtered = PRODUCTS.filter(p => 
+      p.nombre.toLowerCase().includes(term) || 
+      p.descripcion.toLowerCase().includes(term) ||
+      p.categoria.toLowerCase().includes(term)
+    );
+    renderCatalog(filtered);
+  }
+</script>
+</body>
+</html>
