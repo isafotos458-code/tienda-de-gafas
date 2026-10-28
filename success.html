@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compra confirmada — Óptica Visión</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/result.css">
+</head>
+<body>
+<main class="result-page">
+  <div class="result-icon success">✓</div>
+  <h1>¡Compra confirmada!</h1>
+  <p>Recibimos tu pago correctamente. En breve nos contactamos para coordinar la entrega o el retiro.</p>
+  <p id="pay-detail" class="payment-help"></p>
+  <a href="index.html" class="result-btn">Volver al catálogo</a>
+</main>
+<script>
+  // Muestra de dónde vino la confirmación: mock local o Mercado Pago real.
+  // Solo vacía el carrito cuando hay comprobante (approved/mock),
+  // así no se borra si entrás directo o recargás.
+  (function () {
+    const q = new URLSearchParams(window.location.search);
+    const el = document.getElementById("pay-detail");
+    const total = sessionStorage.getItem("optica_last_total");
+    const count = sessionStorage.getItem("optica_last_count");
+    const extra = (total || count) ? ` · tu compra: ${count || "?"} prod. por $ ${total || "?"}` : "";
+    if (q.get("mock") === "1") {
+      el.textContent = "🧪 Pago SIMULADO en modo prueba local (sin tarjeta, sin Mercado Pago). Items: " + (q.get("items") || "?") + extra;
+      localStorage.removeItem("optica_cart");
+      sessionStorage.removeItem("optica_last_total");
+      sessionStorage.removeItem("optica_last_count");
+    } else if (q.get("collection_id") || q.get("payment_id") || q.get("status") || q.get("collection_status") || q.get("preference_id")) {
+      const status = q.get("status") || q.get("collection_status") || "approved";
+      el.textContent = "Comprobante Mercado Pago — estado: " + status
+        + " · pago: " + (q.get("payment_id") || q.get("collection_id") || "-")
+        + " · preferencia: " + (q.get("preference_id") || "-") + extra;
+      if (status === "approved") {
+        localStorage.removeItem("optica_cart");
+        sessionStorage.removeItem("optica_last_total");
+        sessionStorage.removeItem("optica_last_count");
+      }
+    } else {
+      el.textContent = "Llegaste directo sin comprobante. Si pagaste en Mercado Pago, volvé con el botón “Volver al sitio” para verlo acá. Tu carrito sigue guardado.";
+    }
+  })();
+</script>
+</body>
+</html>

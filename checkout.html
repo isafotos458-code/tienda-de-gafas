@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Óptica Visión — Finalizar compra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/checkout.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-lens"></span>
+      Óptica Visión
+    </a>
+  </div>
+</header>
+
+<main class="checkout-page">
+  <a href="index.html" class="back-link">← Seguir comprando</a>
+  <h1>Finalizar compra</h1>
+
+  <section class="checkout-summary">
+    <h2>Tu pedido</h2>
+    <div id="summary-items"></div>
+    <div class="summary-total-row">
+      <span>Total</span>
+      <span id="summary-total">$0</span>
+    </div>
+  </section>
+
+  <section class="checkout-payment">
+    <h2>Forma de pago</h2>
+    <p class="payment-help">Elegí cómo querés pagar. Te vamos a redirigir a la plataforma correspondiente para completar la compra de forma segura.</p>
+
+    <div class="payment-options">
+      <label class="payment-option">
+        <input type="radio" name="metodo" value="mercadopago" checked>
+        <span class="payment-option-label">
+          <strong>Mercado Pago</strong>
+          <small>Tarjeta de crédito, débito, dinero en cuenta o efectivo</small>
+        </span>
+      </label>
+    </div>
+
+    <button id="pay-btn" class="pay-btn">Pagar con Mercado Pago</button>
+    <div id="pay-waiting" hidden>
+      <p id="pay-wait-state" class="payment-help" aria-live="polite">Pago abierto en otra pestaña… esperando aprobación.</p>
+      <button id="verify-btn" type="button" class="pay-btn">Ya pagué, verificar ahora</button>
+      <button id="cancel-wait-btn" type="button" class="back-link">Cancelar y volver</button>
+    </div>
+    <p id="backend-status" class="payment-help" aria-live="polite"></p>
+    <p id="pay-error" class="pay-error" role="alert" hidden></p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <p>Óptica Visión · Proyecto escolar</p>
+</footer>
+
+<script src="js/products.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/checkout.js"></script>
+</body>
+</html>
