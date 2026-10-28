@@ -1,64 +1,35 @@
-type RemoveFromTuple<
-  Tuple extends readonly unknown[],
-  RemoveCount extends number,
-  Index extends 1[] = []
-> = Index["length"] extends RemoveCount
-  ? Tuple
-  : Tuple extends [infer First, ...infer Rest]
-  ? RemoveFromTuple<Rest, RemoveCount, [...Index, 1]>
-  : Tuple;
-
-type ConcatTuples<
-  Prefix extends readonly unknown[],
-  Suffix extends readonly unknown[]
-> = [...Prefix, ...Suffix];
-
-type ExtractFunctionParams<T> = T extends (this: infer TThis, ...args: infer P extends readonly unknown[]) => infer R
-  ? { thisArg: TThis; params: P; returnType: R }
-  : never;
-
-type BindFunction<
-  T extends (this: any, ...args: any[]) => any,
-  TThis,
-  TBoundArgs extends readonly unknown[],
-  ReceiverBound extends boolean
-> = ExtractFunctionParams<T> extends {
-  thisArg: infer OrigThis;
-  params: infer P extends readonly unknown[];
-  returnType: infer R;
+/**
+ * Card Token client for the MercadoPago API.
+ *
+ * Provides a method to tokenize card data, replacing sensitive card
+ * numbers and security codes with a single-use token that can be safely
+ * transmitted and used to create payments without handling raw PAN data.
+ *
+ * @module cardToken
+ */
+import type { CardTokenCreateData } from './create/types';
+import type { MercadoPagoConfig } from '../../mercadoPagoConfig';
+import type { CardTokenResponse } from './commonTypes';
+/**
+ * Client facade for MercadoPago card tokenization operations.
+ *
+ * Use this class to create a temporary, single-use token from card
+ * details or a previously saved card ID, ensuring PCI DSS compliance
+ * by avoiding direct handling of full card numbers on the server side.
+ *
+ * @see {@link https://www.mercadopago.com/developers/en/reference Documentation }.
+ */
+export declare class CardToken {
+    /** SDK configuration providing credentials and HTTP options. */
+    private config;
+    constructor(mercadoPagoConfig: MercadoPagoConfig);
+    /**
+     * Create a card token from card details or a saved card ID.
+     *
+     * The returned token ID should be used in the `token` field when
+     * creating a payment.
+     *
+     * @see {@link https://github.com/mercadopago/sdk-nodejs/blob/master/examples/cardtoken/create.ts Usage Example }.
+     */
+    create({ body, requestOptions }: CardTokenCreateData): Promise<CardTokenResponse>;
 }
-  ? ReceiverBound extends true
-    ? (...args: RemoveFromTuple<P, Extract<TBoundArgs["length"], number>>) => R extends [OrigThis, ...infer Rest]
-      ? [TThis, ...Rest] // Replace `this` with `thisArg`
-      : R
-    : <U, RemainingArgs extends RemoveFromTuple<P, Extract<TBoundArgs["length"], number>>>(
-        thisArg: U,
-        ...args: RemainingArgs
-      ) => R extends [OrigThis, ...infer Rest]
-      ? [U, ...ConcatTuples<TBoundArgs, Rest>] // Preserve bound args in return type
-      : R
-  : never;
-
-declare function callBind<
-  const T extends (this: any, ...args: any[]) => any,
-  Extracted extends ExtractFunctionParams<T>,
-  const TBoundArgs extends Partial<Extracted["params"]> & readonly unknown[],
-  const TThis extends Extracted["thisArg"]
->(
-  args: [fn: T, thisArg: TThis, ...boundArgs: TBoundArgs]
-): BindFunction<T, TThis, TBoundArgs, true>;
-
-declare function callBind<
-  const T extends (this: any, ...args: any[]) => any,
-  Extracted extends ExtractFunctionParams<T>,
-  const TBoundArgs extends Partial<Extracted["params"]> & readonly unknown[]
->(
-  args: [fn: T, ...boundArgs: TBoundArgs]
-): BindFunction<T, Extracted["thisArg"], TBoundArgs, false>;
-
-declare function callBind<const TArgs extends readonly unknown[]>(
-  args: [fn: Exclude<TArgs[0], Function>, ...rest: TArgs]
-): never;
-
-// export as namespace callBind;
-export = callBind;
