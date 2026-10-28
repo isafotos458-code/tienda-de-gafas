@@ -1,110 +1,142 @@
-# Óptica Visión — Proyecto escolar
+# content-disposition
 
-Página web de catálogo con carrito de compras y pago mediante Mercado Pago
-(Checkout Pro). No necesitás VS Code ni Live Server: el backend sirve el
-frontend solo.
+[![NPM Version][npm-image]][npm-url]
+[![NPM Downloads][downloads-image]][downloads-url]
+[![Node.js Version][node-version-image]][node-version-url]
+[![Build Status][github-actions-ci-image]][github-actions-ci-url]
+[![Test Coverage][coveralls-image]][coveralls-url]
 
-## Estructura del proyecto
+Create and parse HTTP `Content-Disposition` header
 
-```
-optica-web/
-├── index.html          → Catálogo de productos + carrito lateral
-├── checkout.html        → Resumen del pedido + botón de pago
-├── success.html         → Pantalla de "pago aprobado"
-├── failure.html         → Pantalla de "pago rechazado"
-├── pending.html         → Pantalla de "pago pendiente"
-├── css/
-│   ├── style.css
-│   ├── checkout.css
-│   └── result.css
-├── js/
-│   ├── products.js       → Acá van TUS productos reales (nombre, precio, foto)
-│   ├── cart.js            → Lógica del carrito (localStorage)
-│   ├── catalog.js         → Render del catálogo en index.html
-│   └── checkout.js        → Conecta el frontend con el backend
-└── server/                → Backend en Node.js, solo para hablar con Mercado Pago
-    ├── server.js
-    ├── package.json
-    ├── .env.example
-    └── .env               → Tu configuración (NO subir a GitHub)
+## Installation
+
+```sh
+$ npm install content-disposition
 ```
 
-## ¿Por qué hay un "server" si el resto es HTML/CSS/JS puro?
+## API
 
-Porque Mercado Pago necesita una credencial secreta (Access Token) para generar
-el link de pago, y esa credencial **nunca puede estar en el código que corre en
-el navegador** (cualquiera podría verla con F12 y usarla). El `server/` recibe
-el carrito (solo `id` + `cantidad`; los precios los pone el servidor desde su
-catálogo), le pide a Mercado Pago el link de pago, y se lo devuelve a la página.
-El resto de la web (catálogo, carrito, diseño) es HTML/CSS/JS común y corriente.
-
-## Paso a paso (sin VS Code)
-
-### 1. Cargar tus productos reales
-Abrí `js/products.js` y reemplazá los productos de ejemplo por los de la
-óptica real: `id` único, nombre, categoría, descripción, precio y la URL de la
-foto (podés subir las fotos a una carpeta `img/` del proyecto y poner la ruta,
-por ejemplo `"img/anteojo1.jpg"`).
-El backend lee este mismo archivo para validar los precios, así que no hay que
-duplicar nada.
-
-### 2. Probar el catálogo y el carrito (sin backend todavía)
-Abrí `index.html` con doble-click en el Explorador: el catálogo y el carrito
-funcionan igual (viven en el navegador, en `localStorage`).
-Para pagar sí necesitás el backend (paso 4).
-
-### 3. Crear tu cuenta de Mercado Pago Developers
-1. Entrá a https://www.mercadopago.com.ar/developers/panel
-2. Creá una aplicación (elegí "Pagos online" / Checkout Pro).
-3. Copiá tus credenciales de **PRUEBA**
-   (Tus integraciones > tu app > Pruebas > Credenciales de prueba).
-   OJO: desde fines de 2025 también empiezan con `APP_USR-`, igual que
-   producción — lo que distingue es la sección, no el prefijo.
-   Para el proyecto escolar usá siempre las credenciales de prueba, no las de
-   producción — así simulás compras sin usar plata real, con los "usuarios de
-   prueba" (comprador/vendedor) y las tarjetas de prueba
-   (ej. Visa `5031 7557 3453 0604`) que da la plataforma.
-4. Creá un usuario de prueba **comprador** (distinto al vendedor) para pagar.
-
-### 4. Configurar y levantar el backend
-En una terminal, en la carpeta del proyecto:
-```bash
-cd server
-npm install
-npm start
+```js
+var contentDisposition = require('content-disposition')
 ```
-La primera vez, copiá `.env.example` a `.env` (en Windows: copiar y pegar el
-archivo en el Explorador y renombrarlo a `.env`), y completá:
-```ini
-MP_ACCESS_TOKEN=APP_USR-... (el de Pruebas > Credenciales de prueba)
-MP_ENV=test
-FRONTEND_URL=http://localhost:3000
-PORT=3000
-MOCK_PAYMENTS=false
+
+### contentDisposition(filename, options)
+
+Create an attachment `Content-Disposition` header value using the given file name,
+if supplied. The `filename` is optional and if no file name is desired, but you
+want to specify `options`, set `filename` to `undefined`.
+
+```js
+res.setHeader('Content-Disposition', contentDisposition('∫ maths.pdf'))
 ```
-Con `MOCK_PAYMENTS=true` podés probar el botón sin credencial (redirige a
-`success.html?mock=1`). Deberías ver:
-`✅ Servidor corriendo en http://localhost:3000`
 
-### 5. Probar la compra completa
-1. Con el backend corriendo, abrí `http://localhost:3000/index.html`
-   (el backend sirve el frontend; no uses doble-click para pagar).
-2. Agregá productos, **"Ir a pagar"** y **"Pagar con Mercado Pago"**.
-3. Se abre Mercado Pago en **otra pestaña**: logueate con tu **comprador de
-   prueba** y pagá con tarjeta de prueba. La pestaña original detecta sola el
-   aprobado y te lleva a `success.html` con el comprobante (sin copiar nada).
-4. Si el navegador bloquea la pestaña nueva, se usa la misma pestaña como
-   alternativa.
+**note** HTTP headers are of the ISO-8859-1 character set. If you are writing this
+header through a means different from `setHeader` in Node.js, you'll want to specify
+the `'binary'` encoding in Node.js.
 
-### 6. Si algo no conecta
-- Revisá que el backend esté corriendo (`npm start` en `/server`) y abrí
-  `http://localhost:3000/health` (tiene que dar `ok:true`).
-- Abrí siempre por `http://localhost:3000/...`, no con doble-click (`file://`
-  bloquea el pago).
-- Si cambiaste código, recargá con `Ctrl+Shift+R`.
-- Verificá sintaxis con `npm run check` en `/server`.
+#### Options
 
-## Para la entrega del colegio
-Se recomienda documentar en el informe: capturas del catálogo, del carrito,
-del checkout, y del pago aprobado en el ambiente de prueba de Mercado Pago
-(sin mostrar tu Access Token en ninguna captura ni subir el `.env` a GitHub).
+`contentDisposition` accepts these properties in the options object.
+
+##### fallback
+
+If the `filename` option is outside ISO-8859-1, then the file name is actually
+stored in a supplemental field for clients that support Unicode file names and
+a ISO-8859-1 version of the file name is automatically generated.
+
+This specifies the ISO-8859-1 file name to override the automatic generation or
+disables the generation all together, defaults to `true`.
+
+  - A string will specify the ISO-8859-1 file name to use in place of automatic
+    generation.
+  - `false` will disable including a ISO-8859-1 file name and only include the
+    Unicode version (unless the file name is already ISO-8859-1).
+  - `true` will enable automatic generation if the file name is outside ISO-8859-1.
+
+If the `filename` option is ISO-8859-1 and this option is specified and has a
+different value, then the `filename` option is encoded in the extended field
+and this set as the fallback field, even though they are both ISO-8859-1.
+
+##### type
+
+Specifies the disposition type, defaults to `"attachment"`. This can also be
+`"inline"`, or any other value (all values except inline are treated like
+`attachment`, but can convey additional information if both parties agree to
+it). The type is normalized to lower-case.
+
+### contentDisposition.parse(string)
+
+```js
+var disposition = contentDisposition.parse('attachment; filename="EURO rates.txt"; filename*=UTF-8\'\'%e2%82%ac%20rates.txt')
+```
+
+Parse a `Content-Disposition` header string. This automatically handles extended
+("Unicode") parameters by decoding them and providing them under the standard
+parameter name. This will return an object with the following properties (examples
+are shown for the string `'attachment; filename="EURO rates.txt"; filename*=UTF-8\'\'%e2%82%ac%20rates.txt'`):
+
+ - `type`: The disposition type (always lower case). Example: `'attachment'`
+
+ - `parameters`: An object of the parameters in the disposition (name of parameter
+   always lower case and extended versions replace non-extended versions). Example:
+   `{filename: "€ rates.txt"}`
+
+## Examples
+
+### Send a file for download
+
+```js
+var contentDisposition = require('content-disposition')
+var destroy = require('destroy')
+var fs = require('fs')
+var http = require('http')
+var onFinished = require('on-finished')
+
+var filePath = '/path/to/public/plans.pdf'
+
+http.createServer(function onRequest (req, res) {
+  // set headers
+  res.setHeader('Content-Type', 'application/pdf')
+  res.setHeader('Content-Disposition', contentDisposition(filePath))
+
+  // send file
+  var stream = fs.createReadStream(filePath)
+  stream.pipe(res)
+  onFinished(res, function () {
+    destroy(stream)
+  })
+})
+```
+
+## Testing
+
+```sh
+$ npm test
+```
+
+## References
+
+- [RFC 2616: Hypertext Transfer Protocol -- HTTP/1.1][rfc-2616]
+- [RFC 5987: Character Set and Language Encoding for Hypertext Transfer Protocol (HTTP) Header Field Parameters][rfc-5987]
+- [RFC 6266: Use of the Content-Disposition Header Field in the Hypertext Transfer Protocol (HTTP)][rfc-6266]
+- [Test Cases for HTTP Content-Disposition header field (RFC 6266) and the Encodings defined in RFCs 2047, 2231 and 5987][tc-2231]
+
+[rfc-2616]: https://tools.ietf.org/html/rfc2616
+[rfc-5987]: https://tools.ietf.org/html/rfc5987
+[rfc-6266]: https://tools.ietf.org/html/rfc6266
+[tc-2231]: http://greenbytes.de/tech/tc2231/
+
+## License
+
+[MIT](LICENSE)
+
+[npm-image]: https://img.shields.io/npm/v/content-disposition.svg
+[npm-url]: https://npmjs.org/package/content-disposition
+[node-version-image]: https://img.shields.io/node/v/content-disposition.svg
+[node-version-url]: https://nodejs.org/en/download
+[coveralls-image]: https://img.shields.io/coveralls/jshttp/content-disposition.svg
+[coveralls-url]: https://coveralls.io/r/jshttp/content-disposition?branch=master
+[downloads-image]: https://img.shields.io/npm/dm/content-disposition.svg
+[downloads-url]: https://npmjs.org/package/content-disposition
+[github-actions-ci-image]: https://img.shields.io/github/workflow/status/jshttp/content-disposition/ci/master?label=ci
+[github-actions-ci-url]: https://github.com/jshttp/content-disposition?query=workflow%3Aci
