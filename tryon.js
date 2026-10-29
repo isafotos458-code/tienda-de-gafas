@@ -21,7 +21,6 @@ async function openTryOnModal(productId) {
 
   modal.classList.add("open");
   
-  // Ocultamos el cartel de carga para que no se trabe nunca más
   const loadingEl = document.getElementById("tryon-loading");
   if (loadingEl) loadingEl.style.display = "none";
 
@@ -57,13 +56,11 @@ async function initCamera() {
     canvas.width = video.videoWidth || 640;
     canvas.height = video.videoHeight || 480;
 
-    // Posición inicial centrada de los anteojos sobre el rostro
     glassesPos.w = canvas.width * 0.45;
     glassesPos.h = glassesPos.w * 0.45;
     glassesPos.x = (canvas.width - glassesPos.w) / 2;
     glassesPos.y = (canvas.height - glassesPos.h) / 2.5;
 
-    // Configuramos interacción táctil / mouse para mover los lentes si el cliente lo desea
     setupTouchListeners(canvas);
 
     function renderLoop() {
@@ -71,16 +68,14 @@ async function initCamera() {
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
-      // Dibujamos el video en modo espejo (natural para la cámara frontal)
       ctx.save();
       ctx.scale(-1, 1);
       ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
       ctx.restore();
 
-      // Dibujamos los lentes sin fondo blanco de forma fluida
       if (glassesImg) {
         ctx.save();
-        ctx.globalCompositeOperation = 'multiply'; // Elimina el fondo blanco
+        ctx.globalCompositeOperation = 'multiply'; // Elimina el fondo blanco automáticamente
         ctx.drawImage(glassesImg, glassesPos.x, glassesPos.y, glassesPos.w, glassesPos.h);
         ctx.restore();
       }
@@ -99,7 +94,6 @@ async function initCamera() {
   }
 }
 
-// Permite mover los anteojos con el dedo en la pantalla del celular para ajustarlos perfectamente
 function setupTouchListeners(canvas) {
   const getPos = (e) => {
     const rect = canvas.getBoundingClientRect();
