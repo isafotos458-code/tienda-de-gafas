@@ -24,17 +24,12 @@ async function openTryOnModal(productId) {
   const loadingEl = document.getElementById("tryon-loading");
   if (loadingEl) loadingEl.style.display = "none";
 
+  // Precargamos la imagen de los lentes
   glassesImg = new Image();
   glassesImg.crossOrigin = "anonymous";
   glassesImg.src = currentTryOnProduct.img;
 
-  glassesImg.onload = () => {
-    initCamera();
-  };
-
-  if (glassesImg.complete) {
-    initCamera();
-  }
+  initCamera();
 }
 
 async function initCamera() {
@@ -53,6 +48,7 @@ async function initCamera() {
     video.srcObject = videoStream;
     await video.play();
 
+    // Corrección clave para móviles: aseguramos un tamaño por defecto si el video tarda en dar las dimensiones
     canvas.width = video.videoWidth || 640;
     canvas.height = video.videoHeight || 480;
 
@@ -66,6 +62,12 @@ async function initCamera() {
     function renderLoop() {
       if (!videoStream || !document.getElementById("tryon-modal").classList.contains("open")) return;
 
+      // Actualizamos dimensiones si el video termina de cargar sus métricas reales
+      if (video.videoWidth && canvas.width !== video.videoWidth) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+      }
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       ctx.save();
@@ -73,9 +75,10 @@ async function initCamera() {
       ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
       ctx.restore();
 
-      if (glassesImg) {
+      // Dibujamos los anteojos eliminando el fondo blanco
+      if (glassesImg && glassesImg.complete && glassesImg.naturalWidth !== 0) {
         ctx.save();
-        ctx.globalCompositeOperation = 'multiply'; // Elimina el fondo blanco automáticamente
+        ctx.globalCompositeOperation = 'multiply';
         ctx.drawImage(glassesImg, glassesPos.x, glassesPos.y, glassesPos.w, glassesPos.h);
         ctx.restore();
       }
