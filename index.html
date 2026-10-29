@@ -7,12 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
-
-<!-- LIBRERÍAS DE DETECCIÓN FACIAL PARA EL PROBADOR VIRTUAL -->
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/face-landmarks-detection"></script>
 </head>
 <body>
 
@@ -108,9 +102,9 @@
     </div>
 
     <div class="tryon-camera-container">
-      <video id="tryon-video" playsinline id="video" autoplay></video>
+      <video id="tryon-video" playsinline autoplay></video>
       <canvas id="tryon-canvas"></canvas>
-      <div id="tryon-loading" class="tryon-loading">Iniciando cámara y reconocedor facial...</div>
+      <div id="tryon-loading" class="tryon-loading" style="display: none;">Iniciando cámara...</div>
     </div>
 
     <div class="tryon-footer">
@@ -275,7 +269,7 @@
 <script src="js/products.js"></script>
 <script src="js/cart.js"></script>
 <script src="js/catalog.js"></script>
-<script src="js/tryon.js"></script>
+<script src="js/tryon.js?v=99"></script>
 
 <script>
   function openMenu() {
