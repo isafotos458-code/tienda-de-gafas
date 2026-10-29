@@ -1,69 +1,136 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Óptica Visión — Finalizar compra</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
-<link rel="stylesheet" href="css/checkout.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finalizar Compra - Tienda de Gafas</title>
+    <link rel="stylesheet" href="CSS/style.css">
+    <style>
+        body {
+            background-color: #fdfbf7;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .checkout-container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+        .volver-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .volver-link:hover {
+            color: #000;
+        }
+        h1.titulo-seccion {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .card-resumen, .card-pago {
+            background: #ffffff;
+            border: 1px solid #e1dcd6;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .card-resumen h3, .card-pago h3 {
+            margin-top: 0;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .detalle-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+        .detalle-total {
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .opcion-pago {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+        .opcion-pago input {
+            margin-right: 15px;
+        }
+    </style>
 </head>
 <body>
 
-<header class="site-header">
-  <div class="header-inner">
-    <a href="index.html" class="logo">
-      <span class="logo-lens"></span>
-      Óptica Visión
-    </a>
-  </div>
-</header>
+    <!-- Barra superior oscura -->
+    <header style="background-color: #1a252f; color: white; padding: 8px 20px; font-size: 14px; display: flex; justify-content: space-between; align-items: center;">
+        <div><span>📞 11 6968 1500</span></div>
+        <div><span>📷 tiendadegafas.optica</span></div>
+    </header>
 
-<main class="checkout-page">
-  <a href="index.html" class="back-link">← Seguir comprando</a>
-  <h1>Finalizar compra</h1>
+    <!-- Barra de navegación con título centrado -->
+    <nav style="background-color: #fdfbf7; padding: 15px 20px; border-bottom: 1px solid #e1dcd6; display: flex; justify-content: space-between; align-items: center; position: relative;">
+        <div style="display: flex; align-items: center;">
+            <span style="cursor: pointer; font-size: 20px;">☰</span>
+            <span style="cursor: pointer; font-size: 18px; margin-left: 15px;">🔍</span>
+            <span style="cursor: pointer; font-size: 18px; margin-left: 15px;">♡</span>
+            <span style="cursor: pointer; font-size: 18px; margin-left: 15px;">🛒</span>
+        </div>
+        
+        <div style="position: absolute; left: 50%; transform: translateX(-50%); font-size: 18px; font-weight: 500; display: flex; align-items: center;">
+            <span style="margin-right: 5px;">∞</span> Tienda de Gafas
+        </div>
 
-  <section class="checkout-summary">
-    <h2>Tu pedido</h2>
-    <div id="summary-items"></div>
-    <div class="summary-total-row">
-      <span>Total</span>
-      <span id="summary-total">$0</span>
+        <div>
+            <span style="font-size: 14px; cursor: pointer; font-weight: bold;">👤 INGRESAR</span>
+        </div>
+    </nav>
+
+    <!-- Contenido del Checkout (Sin banner) -->
+    <div class="checkout-container">
+        <a href="index.html" class="volver-link">← Seguir comprando</a>
+        
+        <h1 class="titulo-seccion">Finalizar compra</h1>
+
+        <div class="card-resumen">
+            <h3>Tu pedido</h3>
+            <div class="detalle-item">
+                <span>1x Montura Cuadrada Negra</span>
+                <span>$ 42.000</span>
+            </div>
+            <div class="detalle-total">
+                <span>Total</span>
+                <span>$ 42.000</span>
+            </div>
+        </div>
+
+        <div class="card-pago">
+            <h3>Forma de pago</h3>
+            <p style="color: #666; font-size: 14px;">Elegí cómo querés pagar. Te vamos a redirigir a la plataforma correspondiente para completar la compra de forma segura.</p>
+            
+            <div class="opcion-pago">
+                <input type="radio" id="mp" name="pago" checked>
+                <label for="mp">
+                    <strong>Mercado Pago</strong><br>
+                    <span style="font-size: 13px; color: #666;">Tarjeta de crédito, débito, dinero en cuenta o efectivo</span>
+                </label>
+            </div>
+        </div>
     </div>
-  </section>
 
-  <section class="checkout-payment">
-    <h2>Forma de pago</h2>
-    <p class="payment-help">Elegí cómo querés pagar. Te vamos a redirigir a la plataforma correspondiente para completar la compra de forma segura.</p>
-
-    <div class="payment-options">
-      <label class="payment-option">
-        <input type="radio" name="metodo" value="mercadopago" checked>
-        <span class="payment-option-label">
-          <strong>Mercado Pago</strong>
-          <small>Tarjeta de crédito, débito, dinero en cuenta o efectivo</small>
-        </span>
-      </label>
-    </div>
-
-    <button id="pay-btn" class="pay-btn">Pagar con Mercado Pago</button>
-    <div id="pay-waiting" hidden>
-      <p id="pay-wait-state" class="payment-help" aria-live="polite">Pago abierto en otra pestaña… esperando aprobación.</p>
-      <button id="verify-btn" type="button" class="pay-btn">Ya pagué, verificar ahora</button>
-      <button id="cancel-wait-btn" type="button" class="back-link">Cancelar y volver</button>
-    </div>
-    <p id="backend-status" class="payment-help" aria-live="polite"></p>
-    <p id="pay-error" class="pay-error" role="alert" hidden></p>
-  </section>
-</main>
-
-<footer class="site-footer">
-  <p>Óptica Visión · Proyecto escolar</p>
-</footer>
-
-<script src="js/products.js"></script>
-<script src="js/cart.js"></script>
-<script src="js/checkout.js"></script>
 </body>
 </html>
